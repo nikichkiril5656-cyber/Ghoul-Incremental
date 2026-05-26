@@ -374,7 +374,6 @@
     </div>
 </div>
 
-<!-- MODAL FOR PROFILE EDIT -->
 <div id="profileModal" class="modal" style="display:none">
     <div class="modal-content">
         <h2 style="color:#ff8888;">👤 EDIT PROFILE</h2>
@@ -437,11 +436,9 @@
     </div>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-    // ========== TOAST SYSTEM ==========
     function showToast(message, type = "error") {
         const container = document.getElementById("toastContainer");
         const toast = document.createElement("div");
@@ -451,11 +448,9 @@
         setTimeout(() => { toast.remove(); }, 5000);
     }
 
-    // ========== PLAYER PROFILE ==========
     let playerName = "Ghoulish";
     let playerAvatar = { type: "emoji", value: "👤", image: null };
 
-    // ========== GAME STATE ==========
     let rc = 5000, yen = 2000, sf = 0, rank = "C", deyourProgress = 0;
     let statLevels = { STR:0, AGI:0, VIT:0, INT:0, SEN:0 };
     let shopLevels = { trainingSpeed:0, skillBoost:0, yenMulti:0, hpBoost:0, defBoost:0, rcMulti:0, critBoost:0, luckBoost:0 };
@@ -480,7 +475,6 @@
     let rankOrder = { "C":0, "B":1, "A":2, "S":3, "SS":4, "SSS":5 };
     let requiredDeyour = { B:5, A:10, S:20, SS:35, SSS:50 };
 
-    // ⚔️ ПЕРЕМЕННЫЕ ДЛЯ СЮЖЕТНЫХ БИТВ
     let isStorylineBattle = false;
     let currentStorylineMission = null;
 
@@ -524,7 +518,6 @@
         "Reaper`s Judgement": { dmgMult:6.0, desc:"6.0x ATK" }
     };
 
-    // ========== AVATAR FUNCTIONS ==========
     function renderAvatar(avatar, element) {
         if(!element) return;
         element.innerHTML = '';
@@ -576,7 +569,6 @@
         showToast("Custom avatar removed", "success");
     }
 
-    // ========== SAVE/LOAD ==========
     function saveGame() {
         const saveData = {
             rc, yen, sf, rank, deyourProgress,
@@ -644,7 +636,6 @@
         }
     }
 
-    // TRAINING
     function startTraining(idx) {
         let t = trainingData[idx];
         if(!t.unlocked) { showToast(`Requires ${t.rankReq} rank!`, "error"); return; }
@@ -678,7 +669,6 @@
         `).join('');
     }
 
-    // STATS
     function statCost(stat) { return Math.floor(10 * Math.pow(1.3, statLevels[stat])); }
     function upgradeStat(stat) {
         let cost = statCost(stat);
@@ -721,7 +711,7 @@
         document.getElementById("kaguneEquipment").innerHTML = `<h3>🩸 KAGUNE & EQUIPMENT</h3><div>⚔️ ${rngItems.kagune}</div><div>🎭 ${rngItems.combatStyle}</div><div>📈 ${rngItems.rcMulti}</div>`;
     }
 
-    // MISSIONS
+
     function completeStoryMission(mission) {
         if(mission.completed) return;
         if(rankOrder[rank] >= rankOrder[mission.rankReq]) {
@@ -738,7 +728,6 @@
         }
     }
 
-    // ⚔️ ФУНКЦИЯ: Начало битвы за сюжетный квест
     function startStorylineBattle(missionIndex) {
         if(combatCooldown > 0) { showToast(`Wait ${combatCooldown}s!`, "error"); return; }
         let mission = storylineMissions[missionIndex];
@@ -746,10 +735,8 @@
         if(rankOrder[rank] < rankOrder[mission.rankReq]) {
             showToast(`Need ${mission.rankReq} rank!`, "error"); return; }
         
-        // 🔥 ПЕРЕКЛЮЧАЕМСЯ НА ВКАДКУ COMBAT
         switchTab('combat');
         
-        // Создаём босса для сюжетной миссии
         let bossEnemy = {
             name: `🎭 ${mission.name} Boss`,
             rankReq: mission.rankReq,
@@ -807,7 +794,6 @@
         document.getElementById("optionalMissions").innerHTML = optionalHtml;
     }
 
-    // INVENTORY
     function isSkillEquipped(skillName) { return equippedSkills.includes(skillName); }
     function removeSkillFromSlot(slotIndex) {
         let removedSkill = equippedSkills[slotIndex];
@@ -868,7 +854,6 @@
         document.getElementById("defaultSkills").innerHTML = defaultHtml;
     }
 
-    // RNG
     function rollRNG(type) {
         if(rc < 1500) { showToast("Need 1500 RC!", "error"); return; }
         rc -= 1500; pityCounter++;
@@ -906,7 +891,6 @@
         document.getElementById("pityDisplay").innerHTML = `🎲 PITY: ${pityCounter}/30 | Chances: C:50% R:30% E:15% L:4.9% M:0.1%`;
     }
 
-    // SHOP
     function shopCost(upg) { return 100 * (shopLevels[upg] + 1); }
     function buyYenUpgrade(upg) {
         let cost = shopCost(upg);
@@ -931,7 +915,6 @@
         `;
     }
 
-    // COMBAT
     function startCombat(enemy) {
         if(combatCooldown > 0) { showToast(`Wait ${combatCooldown}s!`, "error"); return; }
         currentEnemy = { ...enemy, hp: enemy.hp };
@@ -943,7 +926,6 @@
         document.getElementById("combatArena").style.display = "block";
     }
 
-    // 🔥 ИЗМЕНЕНА: проверка флага isStorylineBattle перед выдачей Deyour
     function useSkill(skillName) {
         if(!inCombat || !currentEnemy) return;
         let skill = skillData[skillName];
@@ -963,7 +945,6 @@
             let reward = Math.floor(currentEnemy.rcReward * bonus);
             rc += reward;
             
-            // 🔥 НЕ даём Deyour, если это сюжетная битва
             if(!isStorylineBattle) {
                 deyourProgress++;
             }
@@ -972,7 +953,6 @@
             combatCooldown = 2;
             setTimeout(() => { combatCooldown = 0; renderEnemySelect(); }, 2000);
             
-            // 🔥 Обработка завершения сюжетной битвы
             if(isStorylineBattle && currentStorylineMission !== null) {
                 let mission = storylineMissions[currentStorylineMission];
                 mission.completed = true;
@@ -1005,7 +985,6 @@
         if(playerHP <= 0) {
             showToast(`☠️ DEFEAT! ${currentEnemy.name} killed you.`, "error");
             inCombat = false;
-            // 🔥 Сброс флагов при поражении в сюжетной битве
             if(isStorylineBattle) {
                 isStorylineBattle = false;
                 currentStorylineMission = null;
@@ -1021,7 +1000,6 @@
 
     function fleeCombat() {
         inCombat = false;
-        // 🔥 Сброс флагов при побеге из сюжетной битвы
         if(isStorylineBattle) {
             isStorylineBattle = false;
             currentStorylineMission = null;
@@ -1064,7 +1042,6 @@
         document.getElementById("enemySelect").innerHTML = html;
     }
 
-    // PROFILE MODAL
     function openProfileModal() {
         document.getElementById("profileModal").style.display = "flex";
         document.getElementById("nicknameInput").value = playerName;
@@ -1101,7 +1078,6 @@
         showToast(`Profile updated!`, "success");
     }
 
-    // TABS
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
         let target = document.getElementById(`tab-${tabId}`);
@@ -1125,7 +1101,6 @@
         if(e.target.id === "profileModal") closeProfileModal();
     });
 
-    // GLOBAL EXPORTS
     window.upgradeStat = upgradeStat;
     window.completeStoryMission = completeStoryMission;
     window.startOptional = startOptional;
