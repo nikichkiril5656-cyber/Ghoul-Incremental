@@ -932,7 +932,7 @@
     function renderInventory() {
         let slots = equippedSkills.map((sk, i) => `
             <div class="slot ${!sk ? 'empty-slot' : ''}" onclick="handleSlotClick(${i})">
-                <b>SLOT ${i+1}</b><br>
+                <b>СЛОТ ${i+1}</b><br>
                 ${sk ? sk : "🔘 Пусто"}
                 ${sk ? '<br><span class="small-text">(клик для снятия)</span>' : ''}
             </div>
